@@ -1,5 +1,7 @@
 import base64
 import datetime
+import logging
+
 import pytz
 import re
 from contextlib import contextmanager
@@ -231,6 +233,7 @@ class SnowflakeConnectionManager(SQLConnectionManager):
     @contextmanager
     def exception_handler(self, sql):
         try:
+            logger.debug(sql)
             yield
         except snowflake.connector.errors.ProgrammingError as e:
             msg = str(e)
@@ -411,6 +414,7 @@ class SnowflakeConnectionManager(SQLConnectionManager):
             table = self.get_result_from_cursor(cursor)
         else:
             table = dbt.clients.agate_helper.empty_table()
+        logging.debug(sql+':::'+ response)
         return response, table
 
     def add_query(self, sql, auto_begin=True, bindings=None, abridge_sql_log=False):
